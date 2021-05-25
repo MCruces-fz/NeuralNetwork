@@ -1,17 +1,23 @@
+from layer import Layer
 
+from typing import List, Callable
 
 class Network:
     def __init__(self):
-        self.layers = []
+        self.layers: List[Layer] = []
         self.loss = None
         self.loss_prime = None
 
-    # add layer to network
-    def add(self, layer):
+    def add(self, layer: Layer):
+        """
+        Add layer to network
+        """
         self.layers.append(layer)
 
-    # set loss to use
-    def use(self, loss, loss_prime):
+    def use(self, loss: Callable[[float], float], loss_prime):
+        """
+        Set loss to use
+        """
         self.loss = loss
         self.loss_prime = loss_prime
 
@@ -47,8 +53,11 @@ class Network:
 
                 # compute loss (for display purpose only)
                 err += self.loss(y_train[j], output)
+
+                # backward propagation
+                error = self.loss_prime(y_train[j], output)
                 for layer in reversed(self.layers):
-                    error = layer.back_propagation(error, learning_rate)
+                    error = layer.backward_propagation(error, learning_rate)
 
             # calculates average error in all samples
             err /= samples
